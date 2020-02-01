@@ -1,9 +1,18 @@
 $Global:dataTable = New-Object System.Data.DataTable
-$modules = Get-ChildItem -Path $PSScriptRoot\Modules -Recurse -Include "*.psd1"
-foreach ($module in $modules) {
-    Import-Module -Name $module.Fullname -Verbose
-}
 
+$ModulesExist = Test-Path $PSScriptRoot\Modules
+
+if (!($ModulesExist)) {
+    Install-Module -Name PSWriteHTML -AllowClobber -Force
+    Install-Module -Name PowerForensicsV2 -AllowClobber -Force
+}
+else {
+
+    $modules = Get-ChildItem -Path $PSScriptRoot\Modules -Recurse -Include "*.psd1"
+    foreach ($module in $modules) {
+        Import-Module -Name $module.Fullname -Verbose
+    }
+}
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.drawing
