@@ -25,7 +25,7 @@ From the HTML file you can then export to Excel, CSV if you want, PDF, filter it
 Currently, I have only been able to test this on my personal computer and it won't work with network drives which you don't have physically attached to the computer. I guess VMDKs and VHDs on VMs should work fine. If you test it and it works on your environment, please drop me a message or create a new issue and give me the details, so I can update this section.
 
 # Where was the icon taken from?
-See bellow:
+See below:
 > <a target="_blank" href="https://icons8.com/icons/set/happy-document">Winking Document icon</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
 # Tips
