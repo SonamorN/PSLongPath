@@ -21,7 +21,7 @@ The Export to HTML is using the PSWriteHTML from EvotecIT
 From the HTML file you can then export to Excel, CSV if you want, PDF, filter it and more. Please note that if you have a lot of files returned, the HTML file might become large. On my tests for 30k files, it rendered a 7MB file, which Chrome was struggling to open on a Ryzen 7 3700X, 16GB RAM with NVMe SSD.
 
 # Is it stable?
-Saddly, I was only able to test this on my personal computer and it won't work with network drives which you don't have physically attached to the computer. I guess VMDKs and VHDs on VMs should work fine. If you test it and it works on your environment, please drop me a message or create a new issue and give me the details, so I can update this section.
+Currently, I have only been able to test this on my personal computer and it won't work with network drives which you don't have physically attached to the computer. I guess VMDKs and VHDs on VMs should work fine. If you test it and it works on your environment, please drop me a message or create a new issue and give me the details, so I can update this section.
 
 # Where was the icon taken from?
 See bellow:
