@@ -374,9 +374,3 @@ function Get-Filenames {
 
 
 $Form.ShowDialog()
-
-
-
-
-
-<# Get-ForensicFileRecord | Where-Object {$_.FullName -like "*Program Files (x86)*"} | Select-Object FullName | Measure-Object #>
