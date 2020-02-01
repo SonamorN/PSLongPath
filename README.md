@@ -9,7 +9,7 @@ On my tests it took less than 20 seconds to scan my C: and read 500k files. The 
 Download the script (.ps1) and open a command prompt on the folder where you've downloaded it. 
 Type in 
 
-> powershell.exe -executionPolicy Bypass -File MFTv2.ps1
+> powershell.exe -executionPolicy Bypass -File PSLongPath.ps1
 
 A form will appear and the rest is self explanatory. 
 Select your drive, set the least path length from which you want to create your report and click Scan Drive.
