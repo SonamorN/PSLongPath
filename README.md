@@ -26,3 +26,6 @@ Saddly, I was only able to test this on my personal computer and it won't work w
 # Where was the icon taken from?
 See bellow:
 > <a target="_blank" href="https://icons8.com/icons/set/happy-document">Winking Document icon</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+
+# Tips
+If you click on the first column, it will open the parent folder of the file.
