@@ -151,7 +151,7 @@ $dgvFilePaths.Add_ColumnHeaderMouseClick( { gridHeaderClick })
 $dgvFilePaths.Add_cellclick( { gridClick })
 
 function gridHeaderClick {
-    Write-Host "Header Click"
+   
 }
 
 
@@ -192,10 +192,6 @@ function Add-DataTable2DGV {
 function gridClick {
     $rowIndex = $dgvFilePaths.CurrentRow.Index
     $columnIndex = $dgvFilePaths.CurrentCell.ColumnIndex
-    Write-Host "RowIndex: " $rowIndex
-    Write-Host "Col Index: " $columnIndex 
-    Write-Host "Cell 0 Value :"$dgvFilePaths.Rows[$rowIndex].Cells[0].value
-    Write-Host "Cell ColumnIndex Value: " $dgvFilePaths.Rows[$rowIndex].Cells[$columnIndex].value
     if ($columnIndex -eq 0) {
         Write-Host $location
         $location = Split-Path $dgvFilePaths.Rows[$rowIndex].Cells[0].value -Parent
