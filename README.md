@@ -36,9 +36,14 @@ See below:
 - Ctrl + I -Open About Form
 
 # Screenshots
-- Results (Only 14s)
-![enter image description here](https://imgur.com/CksJ49b.png)
-Info
-![enter image description here](https://imgur.com/XffELPq.png)
+Results (Only 14s)
+
+![Results](https://imgur.com/CksJ49b.png)
+
+File
+
+![File](https://imgur.com/XffELPq.png)
+
 About
-![enter image description here](https://imgur.com/7bxmz69.png)
+
+![About](https://imgur.com/7bxmz69.png)
