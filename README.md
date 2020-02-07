@@ -1,5 +1,3 @@
-
-
 # PSLongPath
 Powershell Script which reveals long paths on a drive
 
@@ -38,7 +36,7 @@ See below:
 - Ctrl + I -Open About Form
 
 # Screenshots
-Results (Only 14s)
+- Results (Only 14s)
 ![enter image description here](https://imgur.com/CksJ49b.png)
 Info
 ![enter image description here](https://imgur.com/XffELPq.png)
