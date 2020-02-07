@@ -1,3 +1,4 @@
+
 # PSLongPath
 Powershell Script which reveals long paths on a drive
 
@@ -30,10 +31,14 @@ See below:
 # Tips
 
  - If you click on the first column, it will open the parent folder of the file.
- - Ctrl + X - Closed Window
- - Ctrl + S - Export to C**S**V
--  Ctrl + H - Export to **H**TML
-- Ctrl + I -Open About Form
+ - Keyboard Shortcuts
+
+| Keys | Function |
+|--|--|
+| Ctrl + X | Close Window |
+| Ctrl + S | Export to C**S**V |
+| Ctrl + H| Export to **H**TML |
+| Ctrl + I | Open About Form |
 
 # Screenshots
 Results (Only 14s)
