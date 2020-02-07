@@ -1,4 +1,5 @@
 
+
 # PSLongPath
 Powershell Script which reveals long paths on a drive
 
@@ -29,4 +30,17 @@ See below:
 > <a target="_blank" href="https://icons8.com/icons/set/happy-document">Winking Document icon</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
 # Tips
-If you click on the first column, it will open the parent folder of the file.
+
+ - If you click on the first column, it will open the parent folder of the file.
+ - Ctrl + X - Closed Window
+ - Ctrl + S - Export to C**S**V
+-  Ctrl + H - Export to **H**TML
+- Ctrl + I -Open About Form
+
+# Screenshots
+Results (Only 14s)
+![enter image description here](https://imgur.com/CksJ49b.png)
+Info
+![enter image description here](https://imgur.com/XffELPq.png)
+About
+![enter image description here](https://imgur.com/7bxmz69.png)
