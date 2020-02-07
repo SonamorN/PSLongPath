@@ -79,7 +79,7 @@ $mainToolStrip = New-Object System.Windows.Forms.ToolStrip
 
 $Form = New-Object system.Windows.Forms.Form
 $Form.ClientSize = '700,540'
-$Form.text = "Long Path Checker"
+$Form.text = "Long Path Checker v1.2"
 $Form.TopMost = $false
 $Form.FormBorderStyle = 'Fixed3D'
 $Form.MaximizeBox = $false
