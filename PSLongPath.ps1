@@ -3,6 +3,40 @@
 # This is accessed by various functions
 $Global:dataTable = New-Object System.Data.DataTable
 
+# Create Icon Extractor Assembly
+$code = @"
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+
+namespace System
+{
+	public class IconExtractor
+	{
+
+	 public static Icon Extract(string file, int number, bool largeIcon)
+	 {
+	  IntPtr large;
+	  IntPtr small;
+	  ExtractIconEx(file, number, out large, out small, 1);
+	  try
+	  {
+	   return Icon.FromHandle(largeIcon ? large : small);
+	  }
+	  catch
+	  {
+	   return null;
+	  }
+
+	 }
+	 [DllImport("Shell32.dll", EntryPoint = "ExtractIconExW", CharSet = CharSet.Unicode, ExactSpelling = true, CallingConvention = CallingConvention.StdCall)]
+	 private static extern int ExtractIconEx(string sFile, int iIndex, out IntPtr piLargeVersion, out IntPtr piSmallVersion, int amountIcons);
+
+	}
+}
+"@
+Add-Type -TypeDefinition $code -ReferencedAssemblies System.Drawing
+
 $ModulesExist = Test-Path $PSScriptRoot\Modules
 
 if (!($ModulesExist)) {
@@ -29,12 +63,68 @@ public static extern IntPtr GetConsoleWindow();
 public static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
 '
 
+# Enable Visual Styles
+[Windows.Forms.Application]::EnableVisualStyles()
+
+$mainForm = New-Object System.Windows.Forms.Form
+$menuMain = New-Object System.Windows.Forms.MenuStrip
+$menuFile = New-Object System.Windows.Forms.ToolStripMenuItem
+$menuAbout = New-Object System.Windows.Forms.ToolStripMenuItem
+$menuExportCSV = New-Object System.Windows.Forms.ToolStripMenuItem
+$menuSaveAs = New-Object System.Windows.Forms.ToolStripMenuItem
+$menuAboutInfo = New-Object System.Windows.Forms.ToolStripMenuItem
+$menuExit = New-Object System.Windows.Forms.ToolStripMenuItem
+$menuAbout = New-Object System.Windows.Forms.ToolStripMenuItem
+$mainToolStrip = New-Object System.Windows.Forms.ToolStrip
+
 $Form = New-Object system.Windows.Forms.Form
-$Form.ClientSize = '700,520'
+$Form.ClientSize = '700,540'
 $Form.text = "Long Path Checker"
 $Form.TopMost = $false
 $Form.FormBorderStyle = 'Fixed3D'
 $Form.MaximizeBox = $false
+$Form.MainMenuSTrip = $menuMain
+
+# Main ToolStrip
+[void]$mainForm.Controls.Add($mainToolStrip)
+ 
+# Main Menu Bar
+[void]$mainForm.Controls.Add($menuMain)
+ 
+# Menu Options - File
+$menuFile.Text = "File"
+$menuAbout.Text = "About"
+[void]$menuMain.Items.AddRange(@($menuFile,$menuAbout))
+
+# Menu Options - File / Export to CSV
+$menuExportCSV.Image = [System.IconExtractor]::Extract("ieframe.dll", 2, $true)
+$menuExportCSV.ShortcutKeys = "Control, S"
+$menuExportCSV.Text = "Export to CSV"
+$menuExportCSV.Add_Click( { Export-DGV2CSV })
+[void]$menuFile.DropDownItems.Add($menuExportCSV)
+ 
+# Menu Options - File / Export to HTML
+$menuSaveAs.Image = [System.IconExtractor]::Extract("inetcpl.cpl", 25, $true)
+$menuSaveAs.ShortcutKeys = "Control, H"
+$menuSaveAs.Text = "Export to HTML"
+$menuSaveAs.Add_Click( { Export-DGV2HTML })
+[void]$menuFile.DropDownItems.Add($menuSaveAs)
+ 
+# Menu Options - File / Exit
+$menuExit.Image = [System.IconExtractor]::Extract("shell32.dll", 10, $true)
+$menuExit.ShortcutKeys = "Control, X"
+$menuExit.Text = "Exit"
+$menuExit.Add_Click( { $Form.Close() })
+[void]$menuFile.DropDownItems.Add($menuExit)
+
+# Menu Options - About / Info
+
+$menuAboutInfo.Image = [System.IconExtractor]::Extract("imageres.dll", 76, $true)
+$menuAboutInfo.ShortcutKeys = "Control, I"
+$menuAboutInfo.Text = "Info"
+$menuAboutInfo.Add_Click( { $FormAbout.ShowDialog() })
+[void]$menuAbout.DropDownItems.Add($menuAboutInfo)
+
 
 $iconBase64 = 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAAA2klEQVRYhe2WQQrCMBBFn+IRVBDc6JX0CF6gvZ9SEC9gF55CN+7VhRFKSJtknBIr+TAEksnvY5gMhawf1lMQF2CREkAV4mMoAVaBkALUjXWeAmAGnFGohBQALYhvesCOuu3SyGPoy3HlR31rEmgeojbQTrCxIoBIGSAWwO7upk7AsW+ALj2Ie7Zexc4Bkc/gegBgB6wc+2tzpiZX6UqzdwUKYGmiBG7mrAjwEQNMgQPtM39vcnoDgPfI3QIVcDdRARvc41gdQNVnkK/gvwBC/gdUx6ut5BXISq4XO9py76gKcG0AAAAASUVORK5CYII='
 $iconBytes = [Convert]::FromBase64String($iconBase64)
@@ -49,7 +139,7 @@ $lbDriveSelection.text = "Select Drive"
 $lbDriveSelection.AutoSize = $true
 $lbDriveSelection.width = 25
 $lbDriveSelection.height = 10
-$lbDriveSelection.location = New-Object System.Drawing.Point(25, 12)
+$lbDriveSelection.location = New-Object System.Drawing.Point(25, 32)
 $lbDriveSelection.Font = 'Microsoft Sans Serif,10'
 
 $lbTotalItems = New-Object system.Windows.Forms.Label
@@ -57,7 +147,7 @@ $lbTotalItems.text = ""
 $lbTotalItems.AutoSize = $true
 $lbTotalItems.width = 25
 $lbTotalItems.height = 10
-$lbTotalItems.location = New-Object System.Drawing.Point(25, 495)
+$lbTotalItems.location = New-Object System.Drawing.Point(25, 515)
 $lbTotalItems.Font = 'Microsoft Sans Serif,10'
 
 $lbNumPath = New-Object system.Windows.Forms.Label
@@ -65,7 +155,7 @@ $lbNumPath.text = "Path Length > than"
 $lbNumPath.AutoSize = $true
 $lbNumPath.width = 25
 $lbNumPath.height = 10
-$lbNumPath.location = New-Object System.Drawing.Point(248, 12)
+$lbNumPath.location = New-Object System.Drawing.Point(255, 32)
 $lbNumPath.Font = 'Microsoft Sans Serif,10'
 
 $lbStopWatch = New-Object system.Windows.Forms.Label
@@ -73,13 +163,13 @@ $lbStopWatch.text = ""
 $lbStopWatch.AutoSize = $true
 $lbStopWatch.width = 25
 $lbStopWatch.height = 10
-$lbStopWatch.location = New-Object System.Drawing.Point(550, 495)
+$lbStopWatch.location = New-Object System.Drawing.Point(587, 515)
 $lbStopWatch.Font = 'Microsoft Sans Serif,10'
 
 $numPathLength = New-Object System.Windows.Forms.NumericUpDown
 $numPathLength.width = 55
 $numPathLength.height = 10
-$numPathLength.location = New-Object System.Drawing.Point(380, 10)
+$numPathLength.location = New-Object System.Drawing.Point(380, 30)
 $numPathLength.Font = 'Microsoft Sans Serif,10'
 $numPathLength.Minimum = 200
 $numPathLength.Maximum = 2500
@@ -88,37 +178,115 @@ $lBoxDrives = New-Object system.Windows.Forms.ComboBox
 $lBoxDrives.width = 133
 $lBoxDrives.height = 30
 $lBoxDrives.DropDownStyle = 'DropDownList'
-$lBoxDrives.location = New-Object System.Drawing.Point(115, 10) 
+$lBoxDrives.location = New-Object System.Drawing.Point(115, 30) 
 
 $btScanDrives = New-Object system.Windows.Forms.Button
 $btScanDrives.text = "Scan Drive"
 $btScanDrives.width = 80
 $btScanDrives.height = 30
-$btScanDrives.location = New-Object System.Drawing.Point(25, 45)
+$btScanDrives.location = New-Object System.Drawing.Point(25, 65)
 $btScanDrives.Font = 'Microsoft Sans Serif,10'
-
-$btExportCSV = New-Object system.Windows.Forms.Button
-$btExportCSV.text = "Export to CSV"
-$btExportCSV.width = 100
-$btExportCSV.height = 30
-$btExportCSV.location = New-Object System.Drawing.Point(150, 45)
-$btExportCSV.Font = 'Microsoft Sans Serif,10'
-
-$btExportHTML = New-Object system.Windows.Forms.Button
-$btExportHTML.text = "Export to HTML"
-$btExportHTML.width = 120
-$btExportHTML.height = 30
-$btExportHTML.location = New-Object System.Drawing.Point(290, 45)
-$btExportHTML.Font = 'Microsoft Sans Serif,10'
 
 $dgvFilePaths = New-Object system.Windows.Forms.DataGridView
 $dgvFilePaths.width = 650 
 $dgvFilePaths.height = 400 
-$dgvFilePaths.location = New-Object System.Drawing.Point(25, 90)
+$dgvFilePaths.location = New-Object System.Drawing.Point(25, 110)
 $dgvFilePaths.RowHeadersVisible = $false; 
 
-$Form.controls.AddRange(@($lbDriveSelection, $lBoxDrives, $btScanDrives, $dgvFilePaths, $btExportCSV, $lbStopWatch, $lbTotalItems, $numPathLength, $btExportHTML, $lbNumPath))
+$Form.controls.AddRange(@($lbDriveSelection, $menuMain, $lBoxDrives, $btScanDrives, $dgvFilePaths, $lbStopWatch, $lbTotalItems, $numPathLength, $lbNumPath))
 
+$FormAbout                       = New-Object system.Windows.Forms.Form
+$FormAbout.ClientSize            = '400,400'
+$FormAbout.text                  = "About"
+$FormAbout.TopMost               = $true
+$FormAbout.FormBorderStyle       = 'Fixed3D'
+$FormAbout.MaximizeBox           = $false
+$FormAbout.Icon = [System.IconExtractor]::Extract("imageres.dll", 76, $true)
+
+$lbCreator                       = New-Object system.Windows.Forms.LinkLabel
+$lbCreator.text                  = "Romanos Nianios"
+$lbCreator.LinkColor             = "Blue"
+$lbCreator.AutoSize              = $true
+$lbCreator.width                 = 25
+$lbCreator.height                = 10
+$lbCreator.location              = New-Object System.Drawing.Point(97,70)
+$lbCreator.Font                  = 'Microsoft Sans Serif,10'
+$lbCreator.add_click({[system.Diagnostics.Process]::start("https://romanos.nianios.gr")})
+
+$lbYear                          = New-Object system.Windows.Forms.Label
+$lbYear.text                     = "2020"
+$lbYear.AutoSize                 = $true
+$lbYear.width                    = 25
+$lbYear.height                   = 10
+$lbYear.location                 = New-Object System.Drawing.Point(97,114)
+$lbYear.Font                     = 'Microsoft Sans Serif,10'
+
+$lbProductName                   = New-Object system.Windows.Forms.Label
+$lbProductName.text              = "PSLongPath v1.2"
+$lbProductName.AutoSize          = $true
+$lbProductName.width             = 25
+$lbProductName.height            = 10
+$lbProductName.location          = New-Object System.Drawing.Point(97,91)
+$lbProductName.Font              = 'Microsoft Sans Serif,10'
+
+$lbInformation                   = New-Object system.Windows.Forms.Label
+$lbInformation.text              = "Script Information"
+$lbInformation.AutoSize          = $true
+$lbInformation.width             = 25
+$lbInformation.height            = 10
+$lbInformation.location          = New-Object System.Drawing.Point(85,49)
+$lbInformation.Font              = 'Microsoft Sans Serif,10,style=Bold'
+
+$lbThirdParty                    = New-Object system.Windows.Forms.Label
+$lbThirdParty.text               = "Third  Party Software/Icon Mentions"
+$lbThirdParty.AutoSize           = $true
+$lbThirdParty.width              = 25
+$lbThirdParty.height             = 10
+$lbThirdParty.location           = New-Object System.Drawing.Point(80,158)
+$lbThirdParty.Font               = 'Microsoft Sans Serif,10,style=Bold'
+
+$lbPSWriteHTML                   = New-Object system.Windows.Forms.LinkLabel
+$lbPSWriteHTML.text              = "PSWriteHTML"
+$lbPSWriteHTML.AutoSize          = $true
+$lbPSWriteHTML.LinkColor         = "Blue"
+$lbPSWriteHTML.width             = 25
+$lbPSWriteHTML.height            = 10
+$lbPSWriteHTML.location          = New-Object System.Drawing.Point(97,182)
+$lbPSWriteHTML.add_click({[system.Diagnostics.Process]::start("https://github.com/EvotecIT/PSWriteHTML")})
+$lbPSWriteHTML.Font              = 'Microsoft Sans Serif,10'
+
+$lbPowerForensicsV2              = New-Object system.Windows.Forms.LinkLabel
+$lbPowerForensicsV2.text         = "PowerForensicsV2"
+$lbPowerForensicsV2.AutoSize     = $true
+$lbPowerForensicsV2.LinkColor    = "Blue"
+$lbPowerForensicsV2.width        = 25
+$lbPowerForensicsV2.height       = 10
+$lbPowerForensicsV2.location     = New-Object System.Drawing.Point(97,202)
+$lbPowerForensicsV2.add_click({[system.Diagnostics.Process]::start("https://github.com/Invoke-IR/PowerForensics")})
+$lbPowerForensicsV2.Font         = 'Microsoft Sans Serif,10'
+
+$lbIcon                          = New-Object system.Windows.Forms.LinkLabel
+$lbIcon.text                     = "Winking Document icon by Icons8"
+$lbIcon.AutoSize                 = $true
+$lbIcon.LinkColor                = "Blue"
+$lbIcon.width                    = 25
+$lbIcon.height                   = 10
+$lbIcon.location                 = New-Object System.Drawing.Point(97,225)
+$lbIcon.Font                     = 'Microsoft Sans Serif,10'
+$lbIcon.add_click({[system.Diagnostics.Process]::start("https://icons8.com/icons/set/happy-document")})
+
+$lbGitHub                        = New-Object system.Windows.Forms.LinkLabel
+$lbGitHub.text                   = "Github"
+$lbGitHub.LinkColor              = "Blue"
+$lbGitHub.AutoSize               = $true
+$lbGitHub.width                  = 25
+$lbGitHub.height                 = 10
+$lbGitHub.location               = New-Object System.Drawing.Point(97,135)
+$lbGitHub.Font                   = 'Microsoft Sans Serif,10'
+$lbGitHub.add_click({[system.Diagnostics.Process]::start("https://github.com/rNianios/PSLongPath")})
+
+
+$FormAbout.controls.AddRange(@($lbCreator,$lbYear,$lbProductName,$lbInformation,$lbThirdParty,$lbPSWriteHTML,$lbPowerForensicsV2,$lbIcon,$lbGitHub))
 
 $Form.Add_Shown(
     {
@@ -229,35 +397,68 @@ $btExportCSV.Add_Click(
 $btExportHTML.Add_Click(
     {
 
-        Export-DG2HTML
+        Export-DGV2HTML
     }
 ) 
 
-function Export-DG2HTML {
-    # Call function to show save dialog
-    $File = Save-File -initialDirectory "C:\" -fileType "html" -fileTypeDescription "HTML File" 
-    if ( $File -ne "" ) {
-           
-    } 
-    else {
-            
-    }
- 
-    # Need to transform the data to only show File Path and Length instead of includign TypeInformation as well.
-    $dataTable = $global:dataTable | Select-Object "File Path", Length
-    $PagingOptions = @(50, 100, 250, 500, 1000)
-    New-HTML -TitleText 'Long Path File Names' -UseCssLinks:$true -UseJavaScriptLinks:$true  -FilePath $file {
-        New-HTMLContent -HeaderText 'Long Path File Names' {
-            New-HTMLPanel {
-                New-HTMLTable -DataTable $dataTable -PagingOptions $PagingOptions -HideFooter -PagingStyle "full_numbers" {
-                    New-HTMLTableHeader -Title 'Long Path Report' 
-                }  
-            }
-        }
-    }   
+function Get-DGVRowCount {
 
-    # Show Messagebox asking if the user would like to open the file immediatelly.
-    Show-MessageBoxExportFinished -path $File
+ $dgvFilePaths.RowCount.ToInt32($null)
+
+   return 
+}
+function Export-DGV2CSV {
+    if ((Get-DGVRowCount) -gt 0) {
+        $File = Save-File -initialDirectory "C:\" -fileType "csv" -fileTypeDescription "CSV File" 
+        # Build logic to handle empty files
+        if ( $File -ne "" ) {
+    
+        } 
+        else {
+   
+        }
+
+        $Global:dataTable | Export-CSV $File -NoTypeInformation
+        Show-MessageBoxExportFinished -path $File
+    }
+    else {
+        [System.Windows.MessageBox]::Show('No data to export, please scan a drive', 'Error', 'OK', 'Error')
+    }
+}
+
+function Export-DGV2HTML {
+    # Call function to show save dialog
+ 
+    if ((Get-DGVRowCount) -gt 0) {
+        $File = Save-File -initialDirectory "C:\" -fileType "html" -fileTypeDescription "HTML File" 
+        if ( $File -ne "" ) {
+           
+        } 
+        else {
+            [System.Windows.MessageBox]::Show('No data to export, please scan a drive', 'Error', 'OK', 'Error')
+
+        }
+ 
+        # Need to transform the data to only show File Path and Length instead of includign TypeInformation as well.
+        $dataTable = $global:dataTable | Select-Object "File Path", Length
+        $PagingOptions = @(50, 100, 250, 500, 1000)
+        New-HTML -TitleText 'Long Path File Names' -UseCssLinks:$true -UseJavaScriptLinks:$true  -FilePath $file {
+            New-HTMLContent -HeaderText 'Long Path File Names' {
+                New-HTMLPanel {
+                    New-HTMLTable -DataTable $dataTable -PagingOptions $PagingOptions -HideFooter -PagingStyle "full_numbers" {
+                        New-HTMLTableHeader -Title 'Long Path Report' 
+                    }  
+                }
+            }
+        }   
+
+        # Show Messagebox asking if the user would like to open the file immediatelly.
+        Show-MessageBoxExportFinished -path $File
+    }
+    else {
+        [System.Windows.MessageBox]::Show('No data to export, please scan a drive', 'Error', 'OK', 'Error')
+    }
+    
 }
 
 function Show-Console {
@@ -323,20 +524,6 @@ function Save-File {
     return $OpenFileDialog.filename
 } 
  
-
-function Export-DGV2CSV {
-    $File = Save-File -initialDirectory "C:\" -fileType "csv" -fileTypeDescription "CSV File" 
-    # Build logic to handle empty files
-    if ( $File -ne "" ) {
-    
-    } 
-    else {
-   
-    }
-
-    $Global:dataTable | Export-CSV $File -NoTypeInformation
-    Show-MessageBoxExportFinished -path $File
-}
 
 function Get-Filenames {
     param([string]$Drive)
