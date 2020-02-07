@@ -388,19 +388,6 @@ function gridClick {
     }
 }
 
-$btExportCSV.Add_Click(
-    {
-        Export-DGV2CSV
-    }
-)
-
-$btExportHTML.Add_Click(
-    {
-
-        Export-DGV2HTML
-    }
-) 
-
 function Get-DGVRowCount {
 
  $dgvFilePaths.RowCount.ToInt32($null)
