@@ -1,3 +1,6 @@
+# Create a global variable to contain the dataTable 
+# which contains all the data regarding filepath and length
+# This is accessed by various functions
 $Global:dataTable = New-Object System.Data.DataTable
 
 $ModulesExist = Test-Path $PSScriptRoot\Modules
@@ -147,49 +150,65 @@ $btScanDrives.Add_Click(
     }
 )
 
-$dgvFilePaths.Add_ColumnHeaderMouseClick( { gridHeaderClick })
 $dgvFilePaths.Add_cellclick( { gridClick })
 
-function gridHeaderClick {
-   
-}
-
-
 function Add-DataTable2DGV {
+    # The string that Get-ForensicFileRecord accepts as Volume Name is in the format of C: or D: without \
+    # The following 3 commands are making sure that the string that will be passed to the command has that
+    # specific pattern 
     $selectedDrive = $lBoxDrives.SelectedItem.ToString()
     $selectedDrive = $selectedDrive.Trim()
     $selectedDrive = $selectedDrive.Substring(0, 2)
 
+    # start a stopwatch to count how many seconds it takes to finish the task
     $stopwatch = [system.diagnostics.stopwatch]::StartNew()
    
+    # call the Get-FileNames function
     $files = Get-Filenames -Drive $selectedDrive
 
+    # Add 2 columns on the DataTable
     [void]$Global:dataTable.Columns.Add("File Path")
     [void]$Global:dataTable.Columns.Add("Length")
 
+    # Hide column headers for faster dataBinding
     $dgvFilePaths.ColumnHeadersVisible = $false
+    # Initiate variable only once and convert the string to int32
     $length = $numPathLength.Value.ToInt32($null)
     foreach ($file in $files) {                
         if ($file.FullName.Length -ge $length) {               
+            # Fill DataTable with the path and length values
             $Global:dataTable.Rows.Add($file.FullName, $file.FullName.Length)
         }
     } 
-    $dgvFilePaths.ColumnHeadersVisible = $false #Speed Increase
+    # Bind the dataTable to the DataGrivView as DataSource
     $dgvFilePaths.DataSource = $global:dataTable
+    # Make Column Headers visible
     $dgvFilePaths.ColumnHeadersVisible = $true
 
-    $dgvFilePaths.Sort($dgvFilePaths.Columns[1], 'Descending') #sort by FilePath Length
+    # Sort the dataGridView by path length
+    $dgvFilePaths.Sort($dgvFilePaths.Columns[1], 'Descending')
+
+    # Set column width
     $dgvFilePaths.Columns[0].Width = 574
     $dgvFilePaths.Columns[1].Width = 55
+    
+    # Set dataGridView to ReadOnly
     $dgvFilePaths.ReadOnly = $true
 
+    # Show the files that exceed the path limit and all the paths that were returned by Get-ForensicFileRecord
     $lbTotalItems.Text = "Files: $($dgvFilePaths.RowCount.ToString()) / $($files.Count)" 
+    # Empty the variable
     $files = $null
+    # Stop the clock
     $lbStopWatch.ForeColor = 'Black'
     $lbStopWatch.Text = "Finished: $($stopwatch.Elapsed.ToString('mm\:ss'))"
 }
 
 function gridClick {
+    # This is called when the user clicks on the DataGridView
+    # It gets the row and column index
+    # and if it's a specific column index, it launches explorer 
+    # on the value of the row on path column
     $rowIndex = $dgvFilePaths.CurrentRow.Index
     $columnIndex = $dgvFilePaths.CurrentCell.ColumnIndex
     if ($columnIndex -eq 0) {
@@ -215,6 +234,7 @@ $btExportHTML.Add_Click(
 ) 
 
 function Export-DG2HTML {
+    # Call function to show save dialog
     $File = Save-File -initialDirectory "C:\" -fileType "html" -fileTypeDescription "HTML File" 
     if ( $File -ne "" ) {
            
@@ -223,6 +243,7 @@ function Export-DG2HTML {
             
     }
  
+    # Need to transform the data to only show File Path and Length instead of includign TypeInformation as well.
     $dataTable = $global:dataTable | Select-Object "File Path", Length
     $PagingOptions = @(50, 100, 250, 500, 1000)
     New-HTML -TitleText 'Long Path File Names' -UseCssLinks:$true -UseJavaScriptLinks:$true  -FilePath $file {
@@ -235,7 +256,7 @@ function Export-DG2HTML {
         }
     }   
 
-
+    # Show Messagebox asking if the user would like to open the file immediatelly.
     Show-MessageBoxExportFinished -path $File
 }
 
@@ -264,7 +285,10 @@ function Hide-Console {
     #0 hide
     [Console.Window]::ShowWindow($consolePtr, 0)
 }
+
+# Get the attached drives on the computer
 function Get-Drives {
+    # Return only Removable and Local Drives, excluding network drives as can't read MFT Table.
     $drives = Get-WmiObject -Class Win32_logicaldisk | Where-Object { $_.DriveType -eq 3 -or $_.DriveType -eq 4 } | Select-Object DeviceID, VolumeName
     return $drives
 }
@@ -277,18 +301,11 @@ function Show-MessageBoxExportFinished {
     $msgBoxInput = [System.Windows.MessageBox]::Show('The export has finished. Would you like to open the exported file?', 'Export Finished', 'YesNo', 'Info')
 
     switch ($msgBoxInput) {
-
         'Yes' {
-
             Invoke-Item $path
-
-
         }
-
         'No' {
-
             ## Do something
-
         }
     }
 }
@@ -309,14 +326,13 @@ function Save-File {
 
 function Export-DGV2CSV {
     $File = Save-File -initialDirectory "C:\" -fileType "csv" -fileTypeDescription "CSV File" 
+    # Build logic to handle empty files
     if ( $File -ne "" ) {
-      
+    
     } 
     else {
-
-        
+   
     }
-
 
     $Global:dataTable | Export-CSV $File -NoTypeInformation
     Show-MessageBoxExportFinished -path $File
@@ -336,25 +352,26 @@ function Get-Filenames {
     }
         
     $RunspacePool = [RunspaceFactory ]::CreateRunspacePool(1, $MaxThreads)
+    # More info here https://docs.microsoft.com/en-us/dotnet/api/system.threading.apartmentstate?redirectedfrom=MSDN&view=netframework-4.8
     $RunspacePool.ApartmentState = "STA"
+    # More info here https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.runspaces.psthreadoptions?view=pscore-6.2.0
     $RunspacePool.ThreadOptions - "ReuseThread"
     $RunspacePool.Open()
 
-    $Job = [powershell ]::Create().AddScript($ScriptBlock ).AddArgument($Drive)
+    $Job = [powershell]::Create().AddScript($ScriptBlock).AddArgument($Drive)
     $Job.RunspacePool = $RunspacePool
     $Jobs += New-Object PSObject -Property @{
         Pipe   = $Job
         Result = $Job.BeginInvoke()
     }
 
-  
-    Do {
-        
-        $lbStopWatch.ForeColor = 'Black'
-        $lbStopWatch.Text = "Running: $($stopwatch.Elapsed.ToString('mm\:ss'))"
+    $lbStopWatch.ForeColor = 'Black'
 
-        [System.Windows.Forms.Application]::DoEvents()
-   
+    Do {
+        # Update clock
+        $lbStopWatch.Text = "Running: $($stopwatch.Elapsed.ToString('mm\:ss'))"
+        # Force Form to Update
+        [System.Windows.Forms.Application]::DoEvents() 
     } While ( $Jobs.Result.IsCompleted -contains $false)
     Write-Host "All jobs completed!"
     
@@ -367,6 +384,5 @@ function Get-Filenames {
  
 }   
 
-
-
+# Show Form
 $Form.ShowDialog()
