@@ -1,5 +1,5 @@
 # ToDo
 - [ ] Make form more responsive
  - [ ] Ability to run script from command line without GUI
- - [ ] Ability to report on Paths instead of whole Drives 
+ - [X] Ability to report on Paths instead of whole Drives - Due in version 1.4
  - [ ] Add MIT Licenses for PowerForenics and PSWriteHTML
