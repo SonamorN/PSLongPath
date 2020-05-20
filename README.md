@@ -46,14 +46,16 @@ See below:
 | Ctrl + P | Open O**p**tions Form |
 
 # Screenshots
-Results (Only 14s)
+Scan Drive
 
-![Results](https://imgur.com/CksJ49b.png)
+![Results](https://i.imgur.com/2HHCeXF.png)
 
-File
+Scan Folder
 
-![File](https://imgur.com/XffELPq.png)
+![File](https://i.imgur.com/5uwYzvt.png)
+
+![File](https://i.imgur.com/Gl1ydR3.png)
 
 About
 
-![About](https://imgur.com/7bxmz69.png)
+![About](https://i.imgur.com/97WvtNu.png)
