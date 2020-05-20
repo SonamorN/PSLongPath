@@ -3,8 +3,11 @@
 Powershell Script which reveals long paths on a drive
 
 # How can it be so fast?
-On my tests it took less than 20 seconds to scan my C: and read 500k files. The technology behind this is the same that is being used by the likes of TreeSize, WizTree etc. Instead of scanning the whole disk and creating threads upon threads to get the results, my script with the help of PowerForensicsV2 reads the MFT of the hard drive. 
+On my tests it took less than 60 seconds to scan my C: and read 700k+ files. The technology behind this is the same that is being used by the likes of TreeSize, WizTree etc. Instead of scanning the whole disk and creating threads upon threads to get the results, my script with the help of PowerForensicsV2 reads the MFT of the hard drive. 
 >[https://github.com/Invoke-IR/PowerForensics](https://github.com/Invoke-IR/PowerForensics)
+
+# Why versions after 1.2 are slower?
+This is because the scan folder feature was introduced and the code had to be changed to accomodate this need.
 
 # How to use
 Download the script (.ps1) and open a command prompt on the folder where you've downloaded it. 
@@ -39,6 +42,9 @@ See below:
 | Ctrl + S | Export to C**S**V |
 | Ctrl + H| Export to **H**TML |
 | Ctrl + I | Open About Form |
+| Ctrl + O | Scan Drive |
+| Ctrl + F | Scan **F**older |
+| Ctrl + P | Open O**p**tions Form |
 
 # Screenshots
 Results (Only 14s)
