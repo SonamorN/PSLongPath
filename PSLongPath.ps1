@@ -534,9 +534,8 @@ function Add-DataTable2DGV($driveLetter, $folderToScan) {
     # specific pattern 
     
     if ($folderToScan) { #if folder to Scan Exists
-        $folderToScan = $folderToScan.ToString().SubString(12, $folderToScan.Length - 1)
+        $folderToScan = $folderToScan.ToString()
         $selectedDrive = $folderToScan.ToString().Substring(0, 2)
-
     }
     else {
         $selectedDrive = $this.ToString().Trim()
