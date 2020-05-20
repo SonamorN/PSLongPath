@@ -29,4 +29,26 @@ See below:
 > <a target="_blank" href="https://icons8.com/icons/set/happy-document">Winking Document icon</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
 # Tips
-If you click on the first column, it will open the parent folder of the file.
+
+ - If you click on the first column, it will open the parent folder of the file.
+ - Keyboard Shortcuts
+
+| Keys | Function |
+|--|--|
+| Ctrl + X | Close Window |
+| Ctrl + S | Export to C**S**V |
+| Ctrl + H| Export to **H**TML |
+| Ctrl + I | Open About Form |
+
+# Screenshots
+Results (Only 14s)
+
+![Results](https://imgur.com/CksJ49b.png)
+
+File
+
+![File](https://imgur.com/XffELPq.png)
+
+About
+
+![About](https://imgur.com/7bxmz69.png)
