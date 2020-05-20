@@ -83,7 +83,7 @@ $mainToolStrip = New-Object System.Windows.Forms.ToolStrip
 
 $Form = New-Object system.Windows.Forms.Form
 $Form.ClientSize = '700,540'
-$Form.text = "Long Path Checker v1.2"
+$Form.text = "Long Path Checker v1.4"
 $Form.TopMost = $false
 $Form.FormBorderStyle = 'Fixed3D'
 $Form.MaximizeBox = $false
@@ -261,7 +261,7 @@ $lbYear.location = New-Object System.Drawing.Point(97, 114)
 $lbYear.Font = 'Microsoft Sans Serif,10'
 
 $lbProductName = New-Object system.Windows.Forms.Label
-$lbProductName.text = "PSLongPath v1.2"
+$lbProductName.text = "PSLongPath v1.4"
 $lbProductName.AutoSize = $true
 $lbProductName.width = 25
 $lbProductName.height = 10
