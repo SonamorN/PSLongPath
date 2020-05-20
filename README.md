@@ -42,7 +42,6 @@ See below:
 | Ctrl + S | Export to C**S**V |
 | Ctrl + H| Export to **H**TML |
 | Ctrl + I | Open About Form |
-| Ctrl + O | Scan Drive |
 | Ctrl + F | Scan **F**older |
 | Ctrl + P | Open O**p**tions Form |
 
