@@ -1,6 +1,11 @@
-
 # PSLongPath
 Powershell Script which reveals long paths on a drive
+
+# Which PowerShell Version is required?
+This script is utilising WinForms from C#, therefore it requires PowerShell v5.1
+
+# Should I run this in an elevated terminal?
+Yes you should. In order to retrieve the MFT file from the hard disk, administrator rights are required.
 
 # How can it be so fast?
 On my tests it took less than 60 seconds to scan my C: and read 700k+ files. The technology behind this is the same that is being used by the likes of TreeSize, WizTree etc. Instead of scanning the whole disk and creating threads upon threads to get the results, my script with the help of PowerForensicsV2 reads the MFT of the hard drive. 
